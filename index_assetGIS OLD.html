@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>assetGIS – Berliner Grundstücksinformationen auf einen Blick</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --primary: #0057FF;
+      --primary-dark: #003FCC;
+      --primary-light: #E8F0FF;
+      --accent: #00C48C;
+      --accent-dark: #00A876;
+      --dark: #0A1628;
+      --gray-900: #1A2332;
+      --gray-700: #3D4F65;
+      --gray-500: #6B7D93;
+      --gray-300: #B0BEC5;
+      --gray-100: #F0F4F8;
+      --white: #FFFFFF;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.08);
+      --shadow-lg: 0 12px 48px rgba(0,0,0,0.12);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--gray-900);
+      line-height: 1.6;
+      background: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ---- NAV ---- */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      transition: box-shadow 0.3s;
+    }
+    nav.scrolled { box-shadow: 0 2px 20px rgba(0,0,0,0.08); }
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-weight: 900;
+      font-size: 1.5rem;
+      color: var(--dark);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+    .logo span { color: var(--primary); }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--gray-700);
+      font-weight: 500;
+      font-size: 0.925rem;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--primary); }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: all 0.25s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: var(--white);
+      box-shadow: 0 4px 16px rgba(0,87,255,0.3);
+    }
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      box-shadow: 0 6px 24px rgba(0,87,255,0.4);
+      transform: translateY(-1px);
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+    }
+    .btn-outline:hover {
+      background: var(--primary);
+      color: var(--white);
+    }
+    .btn-accent {
+      background: var(--accent);
+      color: var(--white);
+      box-shadow: 0 4px 16px rgba(0,196,140,0.3);
+    }
+    .btn-accent:hover {
+      background: var(--accent-dark);
+      transform: translateY(-1px);
+    }
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+    .hamburger span {
+      width: 24px; height: 2px;
+      background: var(--dark);
+      border-radius: 2px;
+      transition: 0.3s;
+    }
+
+    /* ---- HERO ---- */
+    .hero {
+      padding: 160px 24px 100px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(175deg, var(--white) 0%, var(--primary-light) 50%, var(--white) 100%);
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -200px; right: -200px;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(0,87,255,0.08) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -100px; left: -100px;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(0,196,140,0.06) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 20px;
+      background: var(--white);
+      border: 1px solid rgba(0,87,255,0.15);
+      border-radius: 50px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 28px;
+    }
+    .hero-badge::before {
+      content: '';
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.5); }
+    }
+    .hero h1 {
+      font-size: clamp(2.5rem, 5.5vw, 4rem);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -1.5px;
+      color: var(--dark);
+      margin-bottom: 24px;
+    }
+    .hero h1 .highlight {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--gray-500);
+      max-width: 600px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+    }
+    .hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 64px;
+      margin-top: 72px;
+      flex-wrap: wrap;
+    }
+    .hero-stat { text-align: center; }
+    .hero-stat .number {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--dark);
+      letter-spacing: -1px;
+    }
+    .hero-stat .label {
+      font-size: 0.85rem;
+      color: var(--gray-500);
+      font-weight: 500;
+      margin-top: 4px;
+    }
+
+    /* ---- SECTIONS ---- */
+    section { padding: 100px 24px; }
+    .section-header {
+      text-align: center;
+      max-width: 640px;
+      margin: 0 auto 64px;
+    }
+    .section-tag {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+    .section-header h2 {
+      font-size: clamp(1.8rem, 3.5vw, 2.75rem);
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: var(--dark);
+      margin-bottom: 16px;
+      line-height: 1.15;
+    }
+    .section-header p {
+      color: var(--gray-500);
+      font-size: 1.1rem;
+      line-height: 1.7;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+
+    /* ---- HOW IT WORKS ---- */
+    #how-it-works { background: var(--white); }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+    .step {
+      position: relative;
+      background: var(--white);
+      border: 1px solid var(--gray-100);
+      border-radius: var(--radius);
+      padding: 48px 36px 40px;
+      text-align: center;
+      transition: all 0.3s;
+    }
+    .step:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-lg);
+      border-color: transparent;
+    }
+    .step-number {
+      position: absolute;
+      top: -20px; left: 50%;
+      transform: translateX(-50%);
+      width: 40px; height: 40px;
+      background: var(--primary);
+      color: var(--white);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1rem;
+    }
+    .step-icon {
+      width: 64px; height: 64px;
+      background: var(--primary-light);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 28px;
+    }
+    .step h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--dark);
+    }
+    .step p {
+      color: var(--gray-500);
+      font-size: 0.95rem;
+      line-height: 1.65;
+    }
+
+    /* ---- FEATURES ---- */
+    #features {
+      background: var(--gray-100);
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+    .feature-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 36px;
+      display: flex;
+      gap: 20px;
+      transition: all 0.3s;
+      border: 1px solid transparent;
+    }
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+      border-color: rgba(0,87,255,0.1);
+    }
+    .feature-icon {
+      width: 52px; height: 52px;
+      min-width: 52px;
+      background: var(--primary-light);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    .feature-card h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 8px;
+    }
+    .feature-card p {
+      color: var(--gray-500);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    /* ---- PRICING ---- */
+    #pricing { background: var(--white); }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+      align-items: start;
+    }
+    .price-card {
+      background: var(--white);
+      border: 1px solid var(--gray-100);
+      border-radius: var(--radius);
+      padding: 40px 32px;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .price-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-lg);
+    }
+    .price-card.featured {
+      border: 2px solid var(--primary);
+      box-shadow: var(--shadow);
+    }
+    .price-card.featured::before {
+      content: 'Empfohlen';
+      position: absolute;
+      top: 16px; right: -30px;
+      background: var(--primary);
+      color: var(--white);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 40px;
+      transform: rotate(45deg);
+    }
+    .price-name {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--dark);
+      margin-bottom: 4px;
+    }
+    .price-desc {
+      font-size: 0.85rem;
+      color: var(--gray-500);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    .price-amount {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--dark);
+      letter-spacing: -1px;
+      margin-bottom: 4px;
+    }
+    .price-amount .currency { font-size: 1.5rem; vertical-align: super; }
+    .price-amount .period { font-size: 1rem; color: var(--gray-500); font-weight: 500; }
+    .price-note {
+      font-size: 0.8rem;
+      color: var(--gray-300);
+      margin-bottom: 28px;
+    }
+    .price-features {
+      list-style: none;
+      margin-bottom: 32px;
+    }
+    .price-features li {
+      padding: 8px 0;
+      font-size: 0.9rem;
+      color: var(--gray-700);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      line-height: 1.5;
+    }
+    .price-features li::before {
+      content: '✓';
+      color: var(--accent);
+      font-weight: 700;
+      min-width: 18px;
+    }
+    .price-card .btn { width: 100%; justify-content: center; }
+
+    /* ---- PAY PER USE ---- */
+    #pay-per-use { background: var(--gray-100); }
+    .ppu-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+    .ppu-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 36px;
+      border: 1px solid transparent;
+      transition: all 0.3s;
+    }
+    .ppu-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+    }
+    .ppu-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 12px;
+    }
+    .ppu-price {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+    .ppu-price-note {
+      font-size: 0.8rem;
+      color: var(--gray-500);
+      margin-bottom: 20px;
+    }
+    .ppu-card ul {
+      list-style: none;
+      margin-bottom: 24px;
+    }
+    .ppu-card li {
+      padding: 6px 0;
+      font-size: 0.875rem;
+      color: var(--gray-700);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      line-height: 1.5;
+    }
+    .ppu-card li::before {
+      content: '–';
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    /* ---- CTA ---- */
+    .cta-section {
+      background: linear-gradient(135deg, var(--dark) 0%, #162744 100%);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle at 30% 50%, rgba(0,87,255,0.12) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 50%, rgba(0,196,140,0.08) 0%, transparent 50%);
+    }
+    .cta-content { position: relative; z-index: 1; }
+    .cta-section h2 {
+      font-size: clamp(1.8rem, 3.5vw, 2.75rem);
+      font-weight: 800;
+      color: var(--white);
+      margin-bottom: 16px;
+      letter-spacing: -1px;
+    }
+    .cta-section p {
+      color: var(--gray-300);
+      font-size: 1.1rem;
+      max-width: 540px;
+      margin: 0 auto 36px;
+      line-height: 1.7;
+    }
+
+    /* ---- FOOTER ---- */
+    footer {
+      background: var(--dark);
+      padding: 64px 24px 32px;
+      color: var(--gray-300);
+    }
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+    }
+    .footer-brand .logo { color: var(--white); }
+    .footer-brand p {
+      margin-top: 16px;
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: var(--gray-500);
+    }
+    .footer-col h4 {
+      color: var(--white);
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+    }
+    .footer-col a {
+      display: block;
+      color: var(--gray-500);
+      text-decoration: none;
+      font-size: 0.875rem;
+      padding: 6px 0;
+      transition: color 0.2s;
+    }
+    .footer-col a:hover { color: var(--white); }
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 48px auto 0;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--gray-500);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-bottom a {
+      color: var(--gray-500);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-bottom a:hover { color: var(--white); }
+
+    /* ---- ANIMATIONS ---- */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 968px) {
+      .steps,
+      .pricing-grid,
+      .ppu-grid { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; }
+      .features-grid { grid-template-columns: 1fr; }
+      .footer-inner { grid-template-columns: 1fr 1fr; }
+      .hero-stats { gap: 40px; }
+    }
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 72px; left: 0; right: 0;
+        background: var(--white);
+        padding: 24px;
+        gap: 16px;
+        box-shadow: var(--shadow);
+        border-bottom: 1px solid var(--gray-100);
+      }
+      .hamburger { display: flex; }
+      .hero { padding: 130px 24px 72px; }
+      .footer-inner { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="#" class="logo">asset<span>GIS</span></a>
+    <div class="nav-links" id="navLinks">
+      <a href="#how-it-works">So funktioniert's</a>
+      <a href="#features">Daten</a>
+      <a href="#pricing">Preise</a>
+      <a href="#pay-per-use">Pay-per-Use</a>
+      <a href="https://app.asset-gis.de/" class="btn btn-primary" target="_blank">Kostenlos starten</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content fade-up">
+    <div class="hero-badge">Die smarte Alternative zum FIS-Broker</div>
+    <h1>Berliner Grundstücks&shy;informationen <span class="highlight">auf einen Blick</span></h1>
+    <p>Sofort. Aktuell. Präzise. Alle immobilien- und planungsrelevanten Daten für Berlin – aufbereitet für schnelle Entscheidungen.</p>
+    <div class="hero-buttons">
+      <a href="https://app.asset-gis.de/" class="btn btn-primary" target="_blank">Kostenlos starten &rarr;</a>
+      <a href="#how-it-works" class="btn btn-outline">Mehr erfahren</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="number">10+</div>
+        <div class="label">Datenebenen</div>
+      </div>
+      <div class="hero-stat">
+        <div class="number">100%</div>
+        <div class="label">Berliner Abdeckung</div>
+      </div>
+      <div class="hero-stat">
+        <div class="number">24/7</div>
+        <div class="label">Sofortzugriff</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how-it-works">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-tag">So funktioniert's</div>
+      <h2>In drei Schritten zu Ihren Grundstücksdaten</h2>
+      <p>Mobil oder am Desktop – assetGIS liefert Ihnen sofort die Informationen, die Sie für Ihre Entscheidung brauchen.</p>
+    </div>
+    <div class="steps">
+      <div class="step fade-up">
+        <div class="step-number">1</div>
+        <div class="step-icon">📍</div>
+        <h3>Standort bestimmen</h3>
+        <p>Per Ortungsfunktion, Adresssuche oder Marker das gewünschte Grundstück auf der Karte markieren.</p>
+      </div>
+      <div class="step fade-up">
+        <div class="step-number">2</div>
+        <div class="step-icon">📊</div>
+        <h3>Informationen wählen</h3>
+        <p>Lassen Sie sich entscheidungsrelevante Grundstücksinformationen anzeigen – und ergänzen Sie, was Sie brauchen.</p>
+      </div>
+      <div class="step fade-up">
+        <div class="step-number">3</div>
+        <div class="step-icon">💾</div>
+        <h3>Daten mitnehmen</h3>
+        <p>Grundstücksabfragen und Daten zur weiteren Verwendung speichern oder als PDF exportieren.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-tag">Datenebenen</div>
+      <h2>Alle Berliner Planungsdaten an einem Ort</h2>
+      <p>Kombinieren und verschneiden Sie exklusive Daten mit öffentlichen Quellen – grundstücksbezogen und stets aktuell.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card fade-up">
+        <div class="feature-icon">🏗️</div>
+        <div>
+          <h3>Bauleitplanung</h3>
+          <p>Flächennutzungsplan, festgesetzte Bebauungspläne, B-Plan-Entwürfe und der Baunutzungsplan – alles georeferenziert in der Karte.</p>
+        </div>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon">🏙️</div>
+        <div>
+          <h3>Stadtentwicklung</h3>
+          <p>Sanierungsgebiete, Quartiersentwicklungen, ISEK, Erhaltungsverordnungen, StEP Wohnen, Industrie, Gewerbe und mehr.</p>
+        </div>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon">📋</div>
+        <div>
+          <h3>Administrative Daten</h3>
+          <p>Flurstücke, Flure, Gemarkungen, Ortsteile und Bezirke – die gesamte administrative Struktur Berlins.</p>
+        </div>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon">💰</div>
+        <div>
+          <h3>Bodenrichtwerte</h3>
+          <p>Aktuelle und historische Bodenrichtwerte seit 2002, grafische Entwicklungsdiagramme und ein BRW-Rechner für individuelle GFZ.</p>
+        </div>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon">🌳</div>
+        <div>
+          <h3>Grün &amp; Umwelt</h3>
+          <p>Naturschutzgebiete, Wasserschutzgebiete, öffentliche Grünanlagen, Spielplätze und die gesamtstädtische Ausgleichskonzeption.</p>
+        </div>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon">🚆</div>
+        <div>
+          <h3>Mobilität &amp; Infrastruktur</h3>
+          <p>Bus- und Bahnlinien, Haltestellen, Carsharing, Bikes sowie Strom-, Wasser-, Gas- und Breitbandleitungen.</p>
+        </div>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon">🔊</div>
+        <div>
+          <h3>Lärm &amp; Schadstoffe</h3>
+          <p>Lärmkarten für Verkehr, Schiene, Industrie und Luftfahrt sowie Informationen zu Störfallbetrieben (Seveso-III).</p>
+        </div>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon">🏥</div>
+        <div>
+          <h3>Soziale Infrastruktur</h3>
+          <p>Schulen, Kindergärten, Kultureinrichtungen, Sportanlagen, Blaulichtorganisationen und medizinische Versorgung.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-tag">Preise</div>
+      <h2>Transparent &amp; flexibel</h2>
+      <p>Starten Sie kostenlos und upgraden Sie jederzeit – monatlich kündbar, ohne versteckte Kosten.</p>
+    </div>
+    <div class="pricing-grid">
+      <!-- FREE -->
+      <div class="price-card fade-up">
+        <div class="price-name">assetFREE</div>
+        <div class="price-desc">Für erste Entscheidungen</div>
+        <div class="price-amount">0 <span class="currency">€</span></div>
+        <div class="price-note">Kostenlos – für immer</div>
+        <ul class="price-features">
+          <li>Alle Informationen des Geoportals Berlin</li>
+          <li>Bodenrichtwerte mit historischer Entwicklung</li>
+          <li>Pay-per-Use: Planungsdokumente</li>
+          <li>Datenspeicherung für 14 Tage</li>
+        </ul>
+        <a href="https://app.asset-gis.de/" class="btn btn-outline" target="_blank">Kostenlos starten</a>
+      </div>
+      <!-- BASIC -->
+      <div class="price-card featured fade-up">
+        <div class="price-name">assetBASIC</div>
+        <div class="price-desc">Für sichere Projekt-Entscheidungen</div>
+        <div class="price-amount">100 <span class="currency">€</span> <span class="period">/ Monat</span></div>
+        <div class="price-note">zzgl. MwSt. · monatlich kündbar</div>
+        <ul class="price-features">
+          <li>Alle Infos aus assetFREE</li>
+          <li>Alle städtebaulichen Planungsdaten</li>
+          <li>Georeferenzierte Pläne in der Karte</li>
+          <li>Grundstücksbezogene Nutzungsmaße</li>
+          <li>Unbegrenzte Speicherdauer</li>
+          <li>Regelmäßige Aktualisierungen</li>
+        </ul>
+        <a href="https://app.asset-gis.de/plan" class="btn btn-primary" target="_blank">Jetzt abonnieren</a>
+      </div>
+      <!-- TEAM -->
+      <div class="price-card fade-up">
+        <div class="price-name">assetBASIC Team</div>
+        <div class="price-desc">Effiziente Zusammenarbeit im Team</div>
+        <div class="price-amount">250 <span class="currency">€</span> <span class="period">/ Monat</span></div>
+        <div class="price-note">zzgl. MwSt. · monatlich kündbar</div>
+        <ul class="price-features">
+          <li>Alle Funktionen aus assetBASIC</li>
+          <li>Gemeinsamer Arbeitsbereich für bis zu 3 Personen</li>
+          <li>Zugriff auf alle Team-Daten</li>
+          <li>Benutzerverwaltung &amp; Rechte</li>
+          <li>Externe Nutzer mit Leserechten</li>
+        </ul>
+        <a href="https://app.asset-gis.de/plan" class="btn btn-accent" target="_blank">Team starten</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PAY PER USE -->
+<section id="pay-per-use">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-tag">Pay-per-Use</div>
+      <h2>Einzelne Dokumente nach Bedarf</h2>
+      <p>Kaufen Sie nur die Informationen, die Sie gerade brauchen – mit automatischer Aktualisierung im Abo.</p>
+    </div>
+    <div class="ppu-grid">
+      <div class="ppu-card fade-up">
+        <h3>Grundstücks&shy;basisinformationen</h3>
+        <div class="ppu-price">35 € <span style="font-size:0.85rem;font-weight:500;color:var(--gray-500)">pro Abfrage</span></div>
+        <div class="ppu-price-note">Buchbar ab assetFREE</div>
+        <ul>
+          <li>PDF-Download &amp; Datendirektanzeige</li>
+          <li>Schnellzugriff für unterwegs</li>
+          <li>Erweiterbar am Desktop oder Tablet</li>
+        </ul>
+      </div>
+      <div class="ppu-card fade-up">
+        <h3>Bebauungsplan-Dokumente</h3>
+        <div class="ppu-price">ab 25 € <span style="font-size:0.85rem;font-weight:500;color:var(--gray-500)">pro B-Plan</span></div>
+        <div class="ppu-price-note">25 € (bis 5 Dok.) · 50 € (ab 6 Dok.)</div>
+        <ul>
+          <li>Zugriff auf alle Planungsstände</li>
+          <li>Georeferenziert mit assetSITE</li>
+          <li>Aktualisierungen im Abo inklusive</li>
+        </ul>
+      </div>
+      <div class="ppu-card fade-up">
+        <h3>Planungs&shy;dokumente</h3>
+        <div class="ppu-price">ab 25 € <span style="font-size:0.85rem;font-weight:500;color:var(--gray-500)">pro Dokument</span></div>
+        <div class="ppu-price-note">ISEK, Sanierung, Planfeststellung u.a.</div>
+        <ul>
+          <li>Alle Planungsstände verfügbar</li>
+          <li>Georeferenziert mit assetSITE</li>
+          <li>Aktualisierungen inklusive</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container cta-content fade-up">
+    <h2>Starten Sie jetzt – kostenlos</h2>
+    <p>Entdecken Sie Berliner Grundstücksinformationen so, wie Sie es noch nie erlebt haben. Kein Abo nötig.</p>
+    <a href="https://app.asset-gis.de/" class="btn btn-primary" target="_blank" style="font-size:1.05rem;padding:16px 36px;">Jetzt kostenlos starten &rarr;</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="#" class="logo">asset<span>GIS</span></a>
+      <p>Berliner Grundstücksinformationen – sofort, aktuell, präzise. Ein Produkt der repartners GmbH, Berlin.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Produkt</h4>
+      <a href="#how-it-works">So funktioniert's</a>
+      <a href="#features">Datenebenen</a>
+      <a href="#pricing">Preise</a>
+      <a href="#pay-per-use">Pay-per-Use</a>
+    </div>
+    <div class="footer-col">
+      <h4>Angebote</h4>
+      <a href="https://app.asset-gis.de/" target="_blank">assetFREE</a>
+      <a href="https://app.asset-gis.de/plan" target="_blank">assetBASIC</a>
+      <a href="https://app.asset-gis.de/plan" target="_blank">assetBASIC Team</a>
+    </div>
+    <div class="footer-col">
+      <h4>Kontakt</h4>
+      <a href="mailto:info@repartners.de">info@repartners.de</a>
+      <a href="tel:+493037001468">(030) 370 014 68</a>
+      <a href="https://www.asset-gis.de/impressum/" target="_blank">Impressum</a>
+      <a href="https://www.asset-gis.de/datenschutzerklaerung/" target="_blank">Datenschutz</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2025 repartners GmbH · Rheinstraße 45 · 12161 Berlin</span>
+    <span>
+      <a href="https://www.asset-gis.de/impressum/" target="_blank">Impressum</a> ·
+      <a href="https://www.asset-gis.de/datenschutzerklaerung/" target="_blank">Datenschutz</a>
+    </span>
+  </div>
+</footer>
+
+<script>
+  // Navbar scroll effect
+  const nav = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 20);
+  });
+
+  // Mobile menu toggle
+  const hamburger = document.getElementById('hamburger');
+  const navLinks = document.getElementById('navLinks');
+  hamburger.addEventListener('click', () => {
+    navLinks.classList.toggle('open');
+  });
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => navLinks.classList.remove('open'));
+  });
+
+  // Scroll animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
