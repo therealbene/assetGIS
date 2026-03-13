@@ -312,7 +312,7 @@
       align-items: center;
       justify-content: center;
       margin: 0 auto 24px;
-      font-size: 28px;
+      font-size: 0;
     }
     .step h3 {
       font-size: 1.2rem;
@@ -355,7 +355,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
+      font-size: 0;
     }
     .feature-card h3 {
       font-size: 1.05rem;
@@ -402,7 +402,18 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
+      font-size: 0;
+    }
+    .step-icon svg,
+    .feature-icon svg,
+    .persona-icon svg {
+      width: 26px;
+      height: 26px;
+      stroke: var(--primary);
+      stroke-width: 1.8;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
     .persona-title {
       font-size: 1.05rem;
@@ -735,19 +746,25 @@
     <div class="steps">
       <div class="step fade-up">
         <div class="step-number">1</div>
-        <div class="step-icon">🗂️</div>
+        <div class="step-icon">
+          <i data-lucide="folder-kanban" aria-hidden="true"></i>
+        </div>
         <h3>Projekt anlegen</h3>
         <p>Standorte markieren, Lesezeichen setzen und alle Infos in einem projektbezogenen Arbeitsbereich sammeln.</p>
       </div>
       <div class="step fade-up">
         <div class="step-number">2</div>
-        <div class="step-icon">🧩</div>
+        <div class="step-icon">
+          <i data-lucide="layers-3" aria-hidden="true"></i>
+        </div>
         <h3>Eigene Daten ergänzen</h3>
         <p>Bringen Sie Ihre projektbezogenen Geodaten mit und kombinieren Sie sie mit öffentlichen Planungs- und Standortdaten.</p>
       </div>
       <div class="step fade-up">
         <div class="step-number">3</div>
-        <div class="step-icon">🤝</div>
+        <div class="step-icon">
+          <i data-lucide="users" aria-hidden="true"></i>
+        </div>
         <h3>Im Team arbeiten</h3>
         <p>Rollen &amp; Rechte vergeben, Inhalte teilen, exportieren und Entscheidungen nachvollziehbar dokumentieren.</p>
       </div>
@@ -767,7 +784,9 @@
     <div class="persona-grid">
       <div class="persona-card fade-up">
         <div class="persona-top">
-          <div class="persona-icon">🏗️</div>
+          <div class="persona-icon">
+            <i data-lucide="building-2" aria-hidden="true"></i>
+          </div>
           <div>
             <div class="persona-title">Projektentwicklung &amp; Immobilien</div>
             <div class="persona-subtitle">Standorte bewerten, Risiken erkennen und Entscheidungen nachvollziehbar festhalten.</div>
@@ -782,7 +801,9 @@
 
       <div class="persona-card fade-up">
         <div class="persona-top">
-          <div class="persona-icon">🏛️</div>
+          <div class="persona-icon">
+            <i data-lucide="land-plot" aria-hidden="true"></i>
+          </div>
           <div>
             <div class="persona-title">Kommunen &amp; Verwaltung</div>
             <div class="persona-subtitle">Projektbezogen arbeiten – mit klaren Rollen, Rechten und sauberer Ablage.</div>
@@ -797,7 +818,9 @@
 
       <div class="persona-card fade-up">
         <div class="persona-top">
-          <div class="persona-icon">⚡</div>
+          <div class="persona-icon">
+            <i data-lucide="bolt" aria-hidden="true"></i>
+          </div>
           <div>
             <div class="persona-title">Energie, Netze &amp; Infrastruktur</div>
             <div class="persona-subtitle">Korridore und Standorte planen – mit schnellen Checks und belastbarer Doku.</div>
@@ -812,7 +835,9 @@
 
       <div class="persona-card fade-up">
         <div class="persona-top">
-          <div class="persona-icon">🧭</div>
+          <div class="persona-icon">
+            <i data-lucide="compass" aria-hidden="true"></i>
+          </div>
           <div>
             <div class="persona-title">Beratung &amp; Fachgutachten</div>
             <div class="persona-subtitle">Daten bündeln, schnell visualisieren und Ergebnisse konsistent kommunizieren.</div>
@@ -838,56 +863,72 @@
     </div>
     <div class="features-grid">
       <div class="feature-card fade-up">
-        <div class="feature-icon">👥</div>
+        <div class="feature-icon">
+          <i data-lucide="users" aria-hidden="true"></i>
+        </div>
         <div>
           <h3>Teamwork mit Rollen &amp; Rechten</h3>
           <p>Arbeiten Sie in einem gemeinsamen Arbeitsbereich und steuern Sie Zugriffe mit Rollen, Rechten und optionalen Lesekonten für Externe.</p>
         </div>
       </div>
       <div class="feature-card fade-up">
-        <div class="feature-icon">🗺️</div>
+        <div class="feature-icon">
+          <i data-lucide="map" aria-hidden="true"></i>
+        </div>
         <div>
           <h3>Projektkarte statt Datenchaos</h3>
           <p>Lesezeichen, Abfragen und Dokumente bleiben projektbezogen verfügbar – damit Entscheidungen reproduzierbar und handoffs einfach werden.</p>
         </div>
       </div>
       <div class="feature-card fade-up">
-        <div class="feature-icon">📥</div>
+        <div class="feature-icon">
+          <i data-lucide="database" aria-hidden="true"></i>
+        </div>
         <div>
           <h3>Bring your own data (BYOD)</h3>
           <p>Importieren und nutzen Sie Ihre eigenen Geodaten im Projektkontext – z.B. Bestandsflächen, Pipeline, Potenziale oder Fachschalen.</p>
         </div>
       </div>
       <div class="feature-card fade-up">
-        <div class="feature-icon">🔀</div>
+        <div class="feature-icon">
+          <i data-lucide="layers" aria-hidden="true"></i>
+        </div>
         <div>
           <h3>Öffentliche &amp; eigene Daten kombinieren</h3>
           <p>Verschneiden Sie interne Ebenen mit öffentlichen Standort- und Planungsinformationen (z.B. aus dem Geoportal Berlin) – alles in einer Karte.</p>
         </div>
       </div>
       <div class="feature-card fade-up">
-        <div class="feature-icon">🧾</div>
+        <div class="feature-icon">
+          <i data-lucide="file-text" aria-hidden="true"></i>
+        </div>
         <div>
           <h3>Export &amp; Weiterverarbeitung</h3>
           <p>Exportieren Sie Abfragen und Karten für Abstimmungen und Dokumentation – damit Ergebnisse im Projekt weiterverwendbar bleiben.</p>
         </div>
       </div>
       <div class="feature-card fade-up">
-        <div class="feature-icon">🧩</div>
+        <div class="feature-icon">
+          <i data-lucide="puzzle" aria-hidden="true"></i>
+        </div>
         <div>
           <h3>Individuelle Anpassungen (myassetGIS)</h3>
           <p>Corporate Design, Customizing von Funktionen und Ebenen, Projektordner, Multi-User-Verwaltung und Rechtevergaben für Organisationen.</p>
         </div>
       </div>
       <div class="feature-card fade-up">
-        <div class="feature-icon">🏗️</div>
+        <div class="feature-icon">
+          <i data-lucide="buildings-2" aria-hidden="true"></i>
+        </div>
         <div>
           <h3>Planungs- &amp; Standortdaten für Berlin</h3>
           <p>Von Bauleitplanung bis Stadtentwicklungsplanung: Nutzen Sie entscheidungsrelevante Ebenen grundstücksbezogen und aktuell.</p>
         </div>
       </div>
       <div class="feature-card fade-up">
-        <div class="feature-icon">📱</div>
+        <div class="feature-icon">
+          <i data-lucide="smartphone" aria-hidden="true"></i>
+        </div>
         <div>
           <h3>Unterwegs &amp; am Desktop</h3>
           <p>Schnell vor Ort prüfen, später am Desktop vertiefen – ohne Medienbruch zwischen Erstcheck und Projektarbeit.</p>
@@ -1046,6 +1087,7 @@
   </div>
 </footer>
 
+<script src="https://unpkg.com/lucide@latest"></script>
 <script>
   // Navbar scroll effect
   const nav = document.getElementById('navbar');
@@ -1073,6 +1115,10 @@
   }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
 
   document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  if (window.lucide && typeof lucide.createIcons === 'function') {
+    lucide.createIcons();
+  }
 </script>
 
 </body>
