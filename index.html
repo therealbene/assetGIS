@@ -369,6 +369,61 @@
       line-height: 1.6;
     }
 
+    /* ---- USE CASES / PERSONAS ---- */
+    #use-cases { background: var(--white); }
+    .persona-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+    .persona-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 36px;
+      border: 1px solid var(--primary-16);
+      box-shadow: none;
+      transition: all 0.3s;
+    }
+    .persona-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+    }
+    .persona-top {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+    .persona-icon {
+      width: 52px; height: 52px;
+      min-width: 52px;
+      background: var(--grey-light);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    .persona-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 6px;
+    }
+    .persona-subtitle {
+      color: var(--gray-500);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    .persona-list {
+      margin-top: 16px;
+      padding-left: 18px;
+      color: var(--gray-500);
+      font-size: 0.9rem;
+      line-height: 1.65;
+    }
+    .persona-list li { margin: 6px 0; }
+
     /* ---- PRICING ---- */
     #pricing { background: var(--white); }
     .pricing-grid {
@@ -611,6 +666,7 @@
       .pricing-grid,
       .ppu-grid { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; }
       .features-grid { grid-template-columns: 1fr; }
+      .persona-grid { grid-template-columns: 1fr; }
       .footer-inner { grid-template-columns: 1fr 1fr; }
       .hero-stats { gap: 40px; }
     }
@@ -643,6 +699,7 @@
     </a>
     <div class="nav-links" id="navLinks">
       <a href="#how-it-works">So funktioniert's</a>
+      <a href="#use-cases">Use Cases</a>
       <a href="#features">Daten</a>
       <a href="#pricing">Preise</a>
       <a href="#pay-per-use">Pay-per-Use</a>
@@ -693,6 +750,79 @@
         <div class="step-icon">🤝</div>
         <h3>Im Team arbeiten</h3>
         <p>Rollen &amp; Rechte vergeben, Inhalte teilen, exportieren und Entscheidungen nachvollziehbar dokumentieren.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- USE CASES -->
+<section id="use-cases">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-tag">Für wen?</div>
+      <h2>Typische Rollen – typische Aufgaben</h2>
+      <p>assetGIS ist gemacht für Teams, die räumliche Informationen in Projekten schnell bewerten, sauber dokumentieren und im Alltag teilen müssen.</p>
+    </div>
+
+    <div class="persona-grid">
+      <div class="persona-card fade-up">
+        <div class="persona-top">
+          <div class="persona-icon">🏗️</div>
+          <div>
+            <div class="persona-title">Projektentwicklung &amp; Immobilien</div>
+            <div class="persona-subtitle">Standorte bewerten, Risiken erkennen und Entscheidungen nachvollziehbar festhalten.</div>
+          </div>
+        </div>
+        <ul class="persona-list">
+          <li>Standortscreening: Planungsrecht, Restriktionen, Umfeld</li>
+          <li>Varianten prüfen &amp; Flächen vergleichen</li>
+          <li>Ergebnisse als Karte/Export für Stakeholder bereitstellen</li>
+        </ul>
+      </div>
+
+      <div class="persona-card fade-up">
+        <div class="persona-top">
+          <div class="persona-icon">🏛️</div>
+          <div>
+            <div class="persona-title">Kommunen &amp; Verwaltung</div>
+            <div class="persona-subtitle">Projektbezogen arbeiten – mit klaren Rollen, Rechten und sauberer Ablage.</div>
+          </div>
+        </div>
+        <ul class="persona-list">
+          <li>Interne Abstimmung über gemeinsame Projektkarten</li>
+          <li>Quellen, Lesezeichen und Dokumente strukturiert ablegen</li>
+          <li>Zugriffe steuern (Team, Externe, Lesekonten)</li>
+        </ul>
+      </div>
+
+      <div class="persona-card fade-up">
+        <div class="persona-top">
+          <div class="persona-icon">⚡</div>
+          <div>
+            <div class="persona-title">Energie, Netze &amp; Infrastruktur</div>
+            <div class="persona-subtitle">Korridore und Standorte planen – mit schnellen Checks und belastbarer Doku.</div>
+          </div>
+        </div>
+        <ul class="persona-list">
+          <li>Trassen/Standorte mit Schutzgütern &amp; Rahmenbedingungen abgleichen</li>
+          <li>Eigene Geodaten ergänzen (z.&nbsp;B. Leitungen, Flächen, Gutachten)</li>
+          <li>Status &amp; Entscheidungen im Projektkontext dokumentieren</li>
+        </ul>
+      </div>
+
+      <div class="persona-card fade-up">
+        <div class="persona-top">
+          <div class="persona-icon">🧭</div>
+          <div>
+            <div class="persona-title">Beratung &amp; Fachgutachten</div>
+            <div class="persona-subtitle">Daten bündeln, schnell visualisieren und Ergebnisse konsistent kommunizieren.</div>
+          </div>
+        </div>
+        <ul class="persona-list">
+          <li>Projektbezogene Datensammlung aus mehreren Quellen</li>
+          <li>Wiederverwendbare Kartenansichten für Kundentermine</li>
+          <li>Export/Teilen für Berichte, Workshops und Abstimmungen</li>
+        </ul>
       </div>
     </div>
   </div>
